@@ -3,28 +3,27 @@
 #include <regex>
 #include <iostream>
 
-Downloader::~Downloader()
-{
-    if (m_outfile.is_open()) { m_outfile.close(); }
-    if (m_curl) { curl_easy_cleanup(m_curl); }
-}
-
-void Downloader::init() noexcept
+Downloader::Downloader(const std::string& dUrl) : m_dUrl(dUrl), m_res()
 {
     const size_t LAST_SLASH = m_dUrl.find_last_of('/');
     m_filename = LAST_SLASH != std::string::npos
         ? m_dUrl.substr(LAST_SLASH + 1)
         : "download.bin";
 
-
     m_outfile.open(m_filename, std::ios::binary);
-    m_curl = curl_easy_init();
 
+    m_curl = curl_easy_init();
     curl_easy_setopt(m_curl, CURLOPT_URL, m_dUrl.c_str());
     curl_easy_setopt(m_curl, CURLOPT_FOLLOWLOCATION, 1L);
     curl_easy_setopt(m_curl, CURLOPT_USERAGENT, "Mozilla/5.0");
     curl_easy_setopt(m_curl, CURLOPT_WRITEFUNCTION, writeData);
     curl_easy_setopt(m_curl, CURLOPT_WRITEDATA, &m_outfile);
+}
+
+Downloader::~Downloader()
+{
+    if (m_outfile.is_open()) { m_outfile.close(); }
+    if (m_curl) { curl_easy_cleanup(m_curl); }
 }
 
 void Downloader::request() noexcept

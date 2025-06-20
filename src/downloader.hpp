@@ -7,16 +7,13 @@
 class Downloader
 {
 public:
-    explicit Downloader(std::string dUrl)
-        : m_dUrl(std::move(dUrl)), m_res()
-    {}
+    explicit Downloader(const std::string& dUrl);
     ~Downloader() noexcept;
 
     Downloader( const Downloader& ) = delete;
     Downloader& operator=( const Downloader& ) = delete;
 
 public:
-    void init() noexcept;
     void request() noexcept;
 
     [[nodiscard]] const std::string& getFileName() const {
