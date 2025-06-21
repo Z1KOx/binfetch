@@ -1,4 +1,5 @@
 #pragma once
+#include <fstream>
 
 [[nodiscard]] inline size_t g_WriteCallBack(
     void* ptr,
@@ -11,10 +12,7 @@
 
     const auto out = static_cast<std::ofstream*>(stream);
     const size_t total = size * nmemb;
-
-    if (!out->write(static_cast<char*>(ptr), total)) {
-        return 0;
-    }
+    out->write(static_cast<char*>(ptr), total);
 
     return total;
 }
@@ -26,6 +24,8 @@
     std::string* out
 ) noexcept
 {
+    if (!out) return 0;
+
     const size_t totalSize = size * nmemb;
     out->append(static_cast<char *>(contents), totalSize);
     return totalSize;
