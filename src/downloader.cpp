@@ -4,8 +4,12 @@
 #include <regex>
 #include <iostream>
 
-Downloader::Downloader(const std::string& dUrl) : m_DlUrl(dUrl), m_Res()
+Downloader::Downloader() : m_Res()
 {
+    std::cout << "Enter download link: ";
+    std::getline(std::cin, m_DlUrl);
+    std::puts("[binfetch] Downloading Binaries...");
+
     const size_t LAST_SLASH = m_DlUrl.find_last_of('/');
     m_Filename = LAST_SLASH != std::string::npos
         ? m_DlUrl.substr(LAST_SLASH + 1)

@@ -7,11 +7,11 @@
 class Downloader
 {
 public:
-    explicit Downloader(const std::string& dUrl);
+    explicit Downloader();
     ~Downloader() noexcept;
 
-    Downloader( const Downloader& ) = delete;
-    Downloader& operator=( const Downloader& ) = delete;
+    Downloader(const Downloader&) = delete;
+    Downloader& operator=(const Downloader&) = delete;
 
 public:
     void request() noexcept;
