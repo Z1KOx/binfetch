@@ -1,8 +1,5 @@
 #pragma once
-#include <vector>
-#include <string>
-#include <filesystem>
-
+#include "pch.h"
 #include "curl/curl.h"
 
 class Downloader

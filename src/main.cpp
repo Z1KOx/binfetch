@@ -1,8 +1,6 @@
 #include "downloader.hpp"
 #include "vtscanner.hpp"
 
-#include <iostream>
-
 int main()
 {
     try

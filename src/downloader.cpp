@@ -1,9 +1,5 @@
 #include "downloader.hpp"
 #include "utils.hpp"
-
-#include <regex>
-#include <iostream>
-#include <filesystem>
 namespace fs = std::filesystem;
 
 Downloader::Downloader() : m_Res()

@@ -1,10 +1,6 @@
 #include "vtscanner.hpp"
-using json = nlohmann::json;
 #include "utils.hpp"
-
-#include <thread>
-#include <iostream>
-#include <curl/curl.h>
+using json = nlohmann::json;
 
 json VTScanner::scan()
 {
