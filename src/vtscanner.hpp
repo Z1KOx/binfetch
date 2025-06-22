@@ -2,27 +2,27 @@
 #include <string>
 
 #include "nlohmann/json.hpp"
-using json = nlohmann::json;
 
 class VTScanner
 {
 public:
-    explicit VTScanner(const std::string& fpath, std::string&& apiKey)
-        : m_Fpath(fpath), m_ApiKey(std::move(apiKey)) {}
+    explicit VTScanner(const std::vector<unsigned char>& data, std::string&& apiKey)
+        : m_ApiKey(std::move(apiKey)), m_Data(data) {}
     ~VTScanner() noexcept = default;
 
     VTScanner(const VTScanner&) = delete;
     VTScanner& operator=(const VTScanner&) = delete;
 
 public:
-    json scan() noexcept;
-    void printResults() const noexcept;
+    nlohmann::json scan();
+    void printResults() const;
 
 private:
-    json upload() noexcept;
-    json analyze(const std::string& analysisId) noexcept;
+    nlohmann::json upload();
+    nlohmann::json analyze(const std::string& analysisId);
 
 private:
-    std::string m_Fpath, m_ApiKey, m_AnalizeBuff, m_UploadBuff;
-    json m_Result;
+    std::string m_ApiKey, m_AnalizeBuff, m_UploadBuff;
+    std::vector<unsigned char> m_Data;
+    nlohmann::json m_Result;
 };

@@ -1,17 +1,17 @@
 #include "vtscanner.hpp"
+using json = nlohmann::json;
 #include "utils.hpp"
 
 #include <thread>
 #include <iostream>
 #include <curl/curl.h>
 
-json VTScanner::scan() noexcept
+json VTScanner::scan()
 {
     json uploadResponse = upload();
 
     if (!uploadResponse.contains("data") || !uploadResponse["data"].contains("id")) {
-        std::cerr << "[binfetch] Upload failed or malformed response.\n";
-        return {};
+        throw std::runtime_error("[binfetch] Upload failed or malformed response");
     }
 
     const std::string analysisId = uploadResponse["data"]["id"];
@@ -34,11 +34,10 @@ json VTScanner::scan() noexcept
     return {};
 }
 
-void VTScanner::printResults() const noexcept
+void VTScanner::printResults() const
 {
     if (m_Result.empty()) {
-        std::cerr << "[binfetch] No scan result available.\n";
-        return;
+        throw std::runtime_error("[binfetch] No scan result available");
     }
 
     const auto& stats = m_Result["data"]["attributes"]["stats"];
@@ -52,16 +51,16 @@ void VTScanner::printResults() const noexcept
     std::cout << "\n[binfetch] " << malicious << "/" << total << " security vendors flagged this file as malicious\n";
 }
 
-json VTScanner::upload() noexcept
+json VTScanner::upload()
 {
     CURL* curl = curl_easy_init();
-    if (!curl) return {};
 
     curl_mime* mime = curl_mime_init(curl);
     curl_mimepart* part = curl_mime_addpart(mime);
 
     curl_mime_name(part, "file");
-    curl_mime_filedata(part, m_Fpath.c_str());
+    curl_mime_data(part, reinterpret_cast<const char*>(m_Data.data()), m_Data.size());
+    curl_mime_filename(part, "unknown.exe");
 
     curl_slist* headers = nullptr;
     headers = curl_slist_append(headers, ("x-apikey: " + m_ApiKey).c_str());
@@ -76,7 +75,7 @@ json VTScanner::upload() noexcept
     std::puts("[binfetch] Uploading...");
     const CURLcode res = curl_easy_perform(curl);
     if (res != CURLE_OK) {
-        std::cerr << curl_easy_strerror(res) << '\n';
+        throw std::runtime_error(curl_easy_strerror(res));
     }
 
     curl_mime_free(mime);
@@ -86,12 +85,10 @@ json VTScanner::upload() noexcept
     return json::parse(m_UploadBuff);
 }
 
-json VTScanner::analyze(const std::string& analysisId) noexcept
+json VTScanner::analyze(const std::string& analysisId)
 {
     m_AnalizeBuff.clear();
-
     CURL* curl = curl_easy_init();
-    if (!curl) return {};
 
     curl_slist* headers = nullptr;
     headers = curl_slist_append(headers, ("x-apikey: " + m_ApiKey).c_str());
@@ -105,7 +102,7 @@ json VTScanner::analyze(const std::string& analysisId) noexcept
 
     const CURLcode res = curl_easy_perform(curl);
     if (res != CURLE_OK) {
-        std::cerr << curl_easy_strerror(res) << '\n';
+        throw std::runtime_error(curl_easy_strerror(res));
     }
 
     curl_slist_free_all(headers);

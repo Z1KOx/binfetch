@@ -1,5 +1,5 @@
 #pragma once
-#include <fstream>
+#include <vector>
 #include <string>
 
 #include "curl/curl.h"
@@ -14,15 +14,16 @@ public:
     Downloader& operator=(const Downloader&) = delete;
 
 public:
-    void request() noexcept;
-    [[nodiscard]] const std::string& getFileName() const { return m_Filename; }
+    void request();
+    void confirmSave() noexcept;
+    [[nodiscard]] std::vector<unsigned char> getFileBinaries() const { return m_Buffer; }
 
 private:
-    [[nodiscard]] static std::string getExtension(const std::string& url) noexcept;
+    void saveToFile() noexcept;
 
 private:
+    std::vector<unsigned char> m_Buffer{};
     std::string m_DlUrl, m_Filename;
-    std::ofstream m_Outfile;
     CURLcode m_Res;
     CURL* m_Curl = nullptr;
 };

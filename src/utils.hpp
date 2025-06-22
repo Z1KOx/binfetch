@@ -30,3 +30,17 @@
     out->append(static_cast<char *>(contents), totalSize);
     return totalSize;
 }
+
+[[nodiscard]] inline size_t g_VecWriteCallback(
+    void* contents,
+    const size_t size,
+    const size_t nmemb,
+    void* userp
+) noexcept
+{
+    const size_t totalSize = size * nmemb;
+    auto* buffer = static_cast<std::vector<unsigned char>*>(userp);
+    const auto* data = static_cast<unsigned char*>(contents);
+    buffer->insert(buffer->end(), data, data + totalSize);
+    return totalSize;
+}
