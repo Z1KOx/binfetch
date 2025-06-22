@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <string>
+#include <filesystem>
 
 #include "curl/curl.h"
 
@@ -22,8 +23,9 @@ private:
     void saveToFile() noexcept;
 
 private:
+    std::filesystem::path m_Filename;
     std::vector<unsigned char> m_Buffer{};
-    std::string m_DlUrl, m_Filename;
+    std::string m_DlUrl;
     CURLcode m_Res;
     CURL* m_Curl = nullptr;
 };
