@@ -1,33 +1,42 @@
 cmake_minimum_required(VERSION 3.16)
-project(binfetch)
+project(binfetch
+        LANGUAGES CXX
+)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+
 if (MSVC)
-    set(CURL_USE_SCHANNEL ON CACHE BOOL "" FORCE)
+    set(CURL_USE_SCHANNEL ON CACHE BOOL "Use Windows native SSL" FORCE)
 else()
-    set(CURL_USE_SCHANNEL OFF CACHE BOOL "" FORCE)
+    set(CURL_USE_SCHANNEL OFF CACHE BOOL "Disable Windows native SSL" FORCE)
 endif()
 
 include(FetchContent)
+function(fetch_dep name repo tag)
+    message(STATUS "Fetching ${name} from ${repo} (tag ${tag})")
+    FetchContent_Declare(
+            ${name}
+            GIT_REPOSITORY ${repo}
+            GIT_TAG ${tag}
+            GIT_SHALLOW TRUE
+    )
+    FetchContent_MakeAvailable(${name})
+endfunction()
 
-FetchContent_Declare(
+fetch_dep(
         curl
-        GIT_REPOSITORY "https://github.com/curl/curl.git"
-        GIT_TAG        "curl-8_6_0"
-        GIT_SHALLOW    TRUE
+        https://github.com/curl/curl.git
+        curl-8_6_0
 )
-FetchContent_MakeAvailable(curl)
-
-FetchContent_Declare(
+fetch_dep(
         nlohmann_json
-        GIT_REPOSITORY "https://github.com/nlohmann/json.git"
-        GIT_TAG        "v3.11.2"
-        GIT_SHALLOW    TRUE
+        https://github.com/nlohmann/json.git
+        v3.11.2
 )
-FetchContent_MakeAvailable(nlohmann_json)
 
 add_executable(binfetch
         src/main.cpp
@@ -45,11 +54,9 @@ target_link_libraries(binfetch
             CURL::libcurl_static
             nlohmann_json::nlohmann_json
 )
+
 if (UNIX)
-    target_link_libraries(binfetch
-            PRIVATE
-                pthread dl
-    )
+    target_link_libraries(binfetch PRIVATE pthread dl)
     target_compile_options(binfetch
             PRIVATE
                 -Wall
