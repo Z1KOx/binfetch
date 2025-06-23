@@ -1,6 +1,19 @@
 #pragma once
 #include "pch.h"
 
+#if defined(_MSC_VER)
+    #include <format>
+    #define THROW_FORMATTED_ERROR(s, arg) throw std::runtime_error(std::format(s, arg))
+#else
+    #include <sstream>
+    #define THROW_FORMATTED_ERROR(s, arg)         \
+    do {                                          \
+    std::ostringstream oss;                   \
+    oss << s << arg;                          \
+    throw std::runtime_error(oss.str());      \
+    } while (true)
+#endif
+
 [[nodiscard]] inline size_t g_WriteCallBack(
     void* ptr,
     const size_t size,

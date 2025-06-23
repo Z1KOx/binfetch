@@ -25,7 +25,7 @@ void Downloader::request()
 {
     m_Res = curl_easy_perform(m_Curl);
     if (m_Res != CURLE_OK) {
-        throw std::runtime_error(std::format("Download failed: {}", curl_easy_strerror(m_Res)));
+        THROW_FORMATTED_ERROR("Download failed: ", curl_easy_strerror(m_Res));
     }
 }
 
@@ -35,9 +35,12 @@ void Downloader::confirmSave() noexcept
     std::cout << "> ";
     char input; std::cin >> input;
 
-    input == 'y'
-        ? saveToFile()
-        : std::puts("[binfetch] Download aborted");
+    if('y' == input) {
+        saveToFile();
+    }
+    else {
+        std::puts("[binfetch] Download aborted");
+    }
 }
 
 void Downloader::saveToFile() noexcept

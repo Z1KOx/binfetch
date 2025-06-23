@@ -5,7 +5,11 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
-set(CURL_USE_SCHANNEL ON CACHE BOOL "" FORCE)
+if (MSVC)
+    set(CURL_USE_SCHANNEL ON CACHE BOOL "" FORCE)
+else()
+    set(CURL_USE_SCHANNEL OFF CACHE BOOL "" FORCE)
+endif()
 
 include(FetchContent)
 
@@ -41,3 +45,15 @@ target_link_libraries(binfetch
             CURL::libcurl_static
             nlohmann_json::nlohmann_json
 )
+if (UNIX)
+    target_link_libraries(binfetch
+            PRIVATE
+                pthread dl
+    )
+    target_compile_options(binfetch
+            PRIVATE
+                -Wall
+                -Wextra
+                -Wpedantic
+    )
+endif()
