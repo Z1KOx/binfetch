@@ -31,22 +31,13 @@ void Downloader::request()
 
 void Downloader::confirmSave() noexcept
 {
-    std::puts("[binfetch] Are you sure you want to download this file? (y/n)");
+    std::puts("[binfetch] Are you sure you want to download this file? [y/n]");
     std::cout << "> ";
     char input; std::cin >> input;
 
-    switch (input)
-    {
-        case 'y':
-            saveToFile();
-            std::cout << "[binfetch] Saved to: " << fs::absolute(m_Filename) << '\n';
-            break;
-        case 'n':
-            std::puts("[binfetch] Download aborted");
-            break;
-        default:
-            std::puts("[binfetch] Invalid choice");
-    }
+    input == 'y'
+        ? saveToFile()
+        : std::puts("[binfetch] Download aborted");
 }
 
 void Downloader::saveToFile() noexcept
@@ -62,4 +53,6 @@ void Downloader::saveToFile() noexcept
         file.write(reinterpret_cast<const char*>(m_Buffer.data()), m_Buffer.size());
         file.close();
     }
+
+    std::cout << "[binfetch] Saved to: " << fs::absolute(m_Filename) << '\n';
 }

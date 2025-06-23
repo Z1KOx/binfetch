@@ -13,7 +13,7 @@ json VTScanner::scan()
     const std::string analysisId = uploadResponse["data"]["id"];
     std::cout << "[binfetch] Analysis ID: " << analysisId << '\n';
 
-    for (int i = 0; i < 30; ++i)
+    for (auto i = 0; i < 30; ++i)
     {
         std::this_thread::sleep_for(std::chrono::seconds(1));
         json analysis = analyze(analysisId);
@@ -38,7 +38,7 @@ void VTScanner::printResults() const
 
     const auto& stats = m_Result["data"]["attributes"]["stats"];
     const int malicious = stats["malicious"];
-    int total = 0;
+    auto total = 0;
 
     for (const auto& [_, value] : stats.items()) {
         total += value.get<int>();
