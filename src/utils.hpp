@@ -8,9 +8,9 @@
     #include <sstream>
     #define THROW_FORMATTED_ERROR(s, arg)         \
     do {                                          \
-    std::ostringstream oss;                   \
-    oss << s << arg;                          \
-    throw std::runtime_error(oss.str());      \
+        std::ostringstream oss;                   \
+        oss << s << arg;                          \
+        throw std::runtime_error(oss.str());      \
     } while (true)
 #endif
 
